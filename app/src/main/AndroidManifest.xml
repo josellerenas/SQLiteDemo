@@ -11,7 +11,8 @@
         android:theme="@style/Theme.SQLiteDemo">
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:windowSoftInputMode="adjustNothing"> <!--For (not) adjusting the UI when the keyboard appears -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

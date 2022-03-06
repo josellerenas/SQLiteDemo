@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -94,13 +95,52 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     store if the boolean expresion is false */
                 boolean customerActive = cursor.getInt(3) == 1 ? true: false;
 
-                // We add the new customer to the db
+                // We add the new customer to the ListView
                 Customer newCustomer = new Customer(customerId,customerName,customerAge,customerActive);
                 returnList.add(newCustomer);
 
             } while (cursor.moveToNext()); // While there's still data to be checked
         } else {
             // Failure. Do not add anything to the list
+        }
+        return returnList;
+    }
+
+    public List<Customer> getSearchedCustomer(String searchedCustomer, Context context) {
+        // Create the ArrayList that the method will return
+        List<Customer> returnList = new ArrayList<>();
+
+        // Get data from the database
+        String queryString = "SELECT * FROM " + CUSTOMER_TABLE + " WHERE " + COLUMN_CUSTOMER_NAME +
+                "='" + searchedCustomer + "'";
+        SQLiteDatabase db = this.getReadableDatabase();
+        /* We execute the SQL query. We use .rawQuery because the return type is Cursor.
+            Cursor is the set of data that we obtain when executing the SQL statement. */
+        Cursor cursor = db.rawQuery(queryString,null);
+        // Here we use .moveToFirst to know if the cursor has data.
+        if (cursor.moveToFirst()) {
+            /* Loop through the cursor (result set) and create a new customer object.
+                Put them into the returnList */
+            do {
+                // We obtain the data from the columns, one by one
+                int customerId = cursor.getInt(0);
+                String customerName = cursor.getString(1);
+                int customerAge = cursor.getInt(2);
+                /* SQLite doesn't support boolean, just integer. So we made this trick.
+                    Ternary operation: result = theSkyIsBlue ? true: false;
+                    Here, first we put a boolean expression, then a question mark, then the expression
+                    we want to store if the boolean expression is true, then the one we want to
+                    store if the boolean expresion is false */
+                boolean customerActive = cursor.getInt(3) == 1 ? true: false;
+
+                // We add the new customer to the Listview
+                Customer newCustomer = new Customer(customerId,customerName,customerAge,customerActive);
+                returnList.add(newCustomer);
+
+            } while (cursor.moveToNext()); // While there's still data to be checked
+        } else {
+            Toast.makeText(context, "Customer not found", Toast.LENGTH_SHORT).show();
+            //Tell the user the Customer was not found
         }
         return returnList;
     }

@@ -23,8 +23,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     // References to buttons and other controls on the layout
-    Button btnViewAll, btnAdd;
-    EditText editTxtName,editTxtAge;
+    Button btnViewAll, btnAdd, btnSearch;
+    EditText editTxtName,editTxtAge,editTxtSearch;
     Switch swActiveCustomer;
     ListView lvCustomers;
 
@@ -40,15 +40,16 @@ public class MainActivity extends AppCompatActivity {
         // Code to link the variables with the layout objects
         btnViewAll = findViewById(R.id.btnViewAll);
         btnAdd = findViewById(R.id.btnAdd);
+        btnSearch = findViewById(R.id.btnSearch);
         editTxtName = findViewById(R.id.editTxtName);
         editTxtAge = findViewById(R.id.editTxtAge);
+        editTxtSearch = findViewById(R.id.editTxtSearch);
         swActiveCustomer = findViewById(R.id.swActiveCustomer);
         lvCustomers = findViewById(R.id.lvCustomers);
 
         // Fill the list view with all the elements on the db
         databaseHelper = new DatabaseHelper(MainActivity.this);
         showCostumersOnListView(databaseHelper);
-
 
         // On Click Listener for both buttons (View All and Add)
         btnViewAll.setOnClickListener(new View.OnClickListener() {
@@ -76,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
                     with a negative number as id, in order to know how many times the app
                     has failed */
                 try {
-                    customer = new Customer(-1,editTxtName.getText().toString(),
+                    customer = new Customer(45, editTxtName.getText().toString(),
                             Integer.parseInt(editTxtAge.getText().toString()),swActiveCustomer.isChecked());
                     Toast.makeText(MainActivity.this, customer.toString(), Toast.LENGTH_SHORT)
                             .show();
@@ -95,6 +96,18 @@ public class MainActivity extends AppCompatActivity {
                         .show();
                 // Update the listview
                 showCostumersOnListView(databaseHelper);
+            }
+        });
+
+        btnSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // We create a new instance of the DatabaseHelper class.
+                databaseHelper = new DatabaseHelper(MainActivity.this);
+                customerArrayAdapter = new ArrayAdapter<Customer>(MainActivity.this,
+                        android.R.layout.simple_list_item_1, databaseHelper
+                        .getSearchedCustomer(editTxtSearch.getText().toString(),MainActivity.this));
+                lvCustomers.setAdapter(customerArrayAdapter);
             }
         });
 
